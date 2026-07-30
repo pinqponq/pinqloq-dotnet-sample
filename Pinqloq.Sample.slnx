@@ -1,0 +1,5 @@
+<Solution>
+  <Folder Name="/Api/">
+    <Project Path="Api/Pinqloq.Sample.Api/Pinqloq.Sample.Api.csproj" />
+  </Folder>
+</Solution>

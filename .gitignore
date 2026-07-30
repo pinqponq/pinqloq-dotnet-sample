@@ -1,0 +1,17 @@
+## .NET
+bin/
+obj/
+*.user
+.vs/
+
+## Secrets - never commit real credentials
+**/appsettings.Development.json
+**/appsettings.*.local.json
+.env
+
+## EF Core
+*.db
+
+## OS
+.DS_Store
+Thumbs.db
