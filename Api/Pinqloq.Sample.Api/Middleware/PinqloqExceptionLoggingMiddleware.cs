@@ -17,7 +17,7 @@ public class PinqloqExceptionLoggingMiddleware
         _next = next;
     }
 
-    public async Task InvokeAsync(HttpContext context, IPinqloqLogger pinqloqLogger)
+    public async Task InvokeAsync(HttpContext context, IPinqloqLogger pinqloqClient)
     {
         try
         {
@@ -25,7 +25,7 @@ public class PinqloqExceptionLoggingMiddleware
         }
         catch (Exception exception)
         {
-            pinqloqLogger.Enqueue(new PinqloqLogEntry
+            pinqloqClient.Enqueue(new PinqloqLogEntry
             {
                 Event = "UnhandledException",
                 Identifier = DemoIdentifier,

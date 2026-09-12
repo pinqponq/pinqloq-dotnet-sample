@@ -8,18 +8,18 @@ namespace Pinqloq.Sample.Api.Controllers;
 [Route("client-events")]
 public class ClientEventsController : ControllerBase
 {
-    private readonly IPinqloqLogger _pinqloqLogger;
+    private readonly IPinqloqLogger _pinqloqClient;
 
-    public ClientEventsController(IPinqloqLogger pinqloqLogger)
+    public ClientEventsController(IPinqloqLogger pinqloqClient)
     {
-        _pinqloqLogger = pinqloqLogger;
+        _pinqloqClient = pinqloqClient;
     }
 
     // ---- 4. Client/device event forwarding: the secret key never leaves this backend ----
     [HttpPost]
     public IActionResult Forward([FromBody] ClientEventRequest request)
     {
-        _pinqloqLogger.Enqueue(new PinqloqLogEntry
+        _pinqloqClient.Enqueue(new PinqloqLogEntry
         {
             Event = request.Event,
             Identifier = request.DeviceId ?? "unknown-device",
