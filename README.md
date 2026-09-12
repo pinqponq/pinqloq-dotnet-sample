@@ -1,6 +1,6 @@
 # pinqloq .NET Sample
 
-A minimal ASP.NET Core Web API showing how to integrate the [pinqloq](https://pinqloq.pinqponq.io) logging SDK. It's a tiny Pomodoro-timer API (in-memory, no database) with four endpoints, each one demonstrating a different pinqloq logging mechanism.
+A minimal ASP.NET Core Web API showing how to integrate the [pinqloq](https://pinqloq.pinqponq.io) logging SDK. It's a tiny Pomodoro-timer API (in-memory, no database), each part of it demonstrating a different pinqloq logging mechanism.
 
 [![.NET](https://img.shields.io/badge/.NET-10.0-512BD4?logo=dotnet&logoColor=white)](https://dotnet.microsoft.com)
 [![NuGet](https://img.shields.io/nuget/v/pinqloq?label=pinqloq&color=004880&logo=nuget&logoColor=white)](https://www.nuget.org/packages/pinqloq)
@@ -8,39 +8,10 @@ A minimal ASP.NET Core Web API showing how to integrate the [pinqloq](https://pi
 
 ## What this sample demonstrates
 
-| Endpoint | Method | pinqloq mechanism |
-|---|---|---|
-| `/sessions` | `GET` | Automatic HTTP request logging (`UsePinqloqRequestLogging()`) — no pinqloq code in the handler at all |
-| `/sessions` | `POST` | Manual business-event logging (`IPinqloqLogger.Enqueue`) — `SessionStarted` |
-| `/sessions/{id}` | `PUT` | Manual event logging (`SessionUpdated` / `SessionCompleted`) — a real not-found error on an unknown id also demonstrates the error-logging path |
-| `/sessions/{id}` | `DELETE` | Manual event logging (`SessionDeleted`) |
-| `/client-events` | `POST` | Device/client log forwarding (`LogSourceType.Device`) — the secret key never reaches a client, only this backend holds it |
-
-Unhandled exceptions are caught by `PinqloqExceptionLoggingMiddleware`, which logs them at `PinqloqLogLevel.Error` with the exception type, message, and stack trace in `Detail`, then returns a generic `500`.
-
-## Project layout
-
-```
-Api/Pinqloq.Sample.Api/
-  Program.cs                                  Composition root: DI + middleware pipeline
-  PinqloqCollections.cs                       The three collection names used across the app
-  Models/
-    BaseRequestModel.cs / BaseResponseModel.cs Shared request/response envelope
-    SessionModel.cs                           Nested Create/GetAll/Update/Delete request & response models
-    PomodoroSession.cs                        Internal domain record
-    ClientEventRequest.cs
-  Interfaces/
-    ISessionService.cs
-  Services/
-    SessionService.cs                         In-memory store + manual pinqloq event logging
-  Controllers/
-    SessionsController.cs                     GET/POST /sessions, PUT/DELETE /sessions/{id}
-    ClientEventsController.cs                 POST /client-events
-  Middleware/
-    PinqloqExceptionLoggingMiddleware.cs       Catches exceptions, logs Error level, returns 500
-```
-
-`ClientEventsController` has no service layer behind it on purpose — forwarding a client event is a direct pass-through to `IPinqloqLogger`, and a service class there would just be an abstraction with no real logic in it.
+- **Automatic HTTP request logging** (`UsePinqloqRequestLogging()`) — no pinqloq code in the handler at all
+- **Manual business-event logging** (`IPinqloqLogger.Enqueue`) — including the error-logging path on a real not-found case
+- **Device/client log forwarding** (`LogSourceType.Device`) — the secret key never reaches a client, only this backend holds it
+- **Unhandled-exception logging**, via `PinqloqExceptionLoggingMiddleware`, which logs at `PinqloqLogLevel.Error` with the exception type, message, and stack trace in `Detail`, then returns a generic `500`
 
 ## Collections
 
@@ -49,8 +20,8 @@ pinqloq's dashboard organizes logs into named collections. This sample uses thre
 | Collection | Constant | Contents |
 |---|---|---|
 | `pinqloq_sample_http` | `PinqloqCollections.Http` | Automatic HTTP request logs (the `ApiLogsCollectionName` default) |
-| `pinqloq_sample_jobs` | `PinqloqCollections.Jobs` | Manual backend business events (`SessionStarted/Updated/Completed/Deleted`) and unhandled exceptions (`UnhandledException`) |
-| `pinqloq_sample_client` | `PinqloqCollections.Client` | Events forwarded from `/client-events`, tagged `LogSourceType.Device` |
+| `pinqloq_sample_jobs` | `PinqloqCollections.Jobs` | Manual backend business events and unhandled exceptions |
+| `pinqloq_sample_client` | `PinqloqCollections.Client` | Events forwarded from the client-events endpoint, tagged `LogSourceType.Device` |
 
 You need to create all three collections in your pinqloq project before running the app, or writes to a missing/unauthorized collection will get a `403`.
 
