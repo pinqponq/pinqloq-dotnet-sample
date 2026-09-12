@@ -10,12 +10,12 @@ public class SessionService : ISessionService
     private const string DemoIdentifier = "demo-user";
 
     private readonly ConcurrentDictionary<int, PomodoroSession> _sessions = new();
-    private readonly IPinqloqLogger _pinqloqLogger;
+    private readonly IPinqloqLogger _pinqloqClient;
     private int _nextSessionId;
 
-    public SessionService(IPinqloqLogger pinqloqLogger)
+    public SessionService(IPinqloqLogger pinqloqClient)
     {
-        _pinqloqLogger = pinqloqLogger;
+        _pinqloqClient = pinqloqClient;
     }
 
     public SessionModel.GetAll.ReturnData GetAll(SessionModel.GetAll.Request request)
@@ -87,7 +87,7 @@ public class SessionService : ISessionService
 
     private void LogSessionEvent(string eventName, PomodoroSession session)
     {
-        _pinqloqLogger.Enqueue(new PinqloqLogEntry
+        _pinqloqClient.Enqueue(new PinqloqLogEntry
         {
             Event = eventName,
             Identifier = DemoIdentifier,
