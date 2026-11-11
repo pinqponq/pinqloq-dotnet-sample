@@ -75,3 +75,7 @@ Swagger UI is available at `http://localhost:5200/swagger` in the Development en
 ## Requirements
 
 - A pinqloq account and project (free tier is enough, but check your plan's collection limit against the three collections this sample needs)
+
+## pinq-doq submodule
+
+`.pinq-doq/` is a Git submodule that points to `pinqponq/pinqdoq`, a private repository. Clone this repository without `--recurse-submodules`. Without access to `pinqponq/pinqdoq`, `git submodule update` fails for `.pinq-doq/`, and you can skip it: the rules and skills from it are already committed under `.claude/rules/` and `.claude/skills/`, so the project builds and runs without the submodule.
